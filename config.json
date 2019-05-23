@@ -1,4 +1,4 @@
 {
-    "error_log_file": "/log/err/err_log.txt",
+    "error_log_file": "/log/err",
     "log_path": "/log/api"
 }

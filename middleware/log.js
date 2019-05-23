@@ -7,7 +7,7 @@ const fs = require('fs');
  * 参数：1.filePath 文件存储的路径（从项目的根目录开始）
  *      2.fileName 文件名
  */
-function main(filePath = null, fileName = 'log') {
+function main(filePath = null, fileName = 'log', errFileName = 'err') {
     // 检查日志路径，不存在则创建
     let filePathArr = filePath.split(/[\/(\\)]/);
     let tempDir = '';
@@ -15,6 +15,15 @@ function main(filePath = null, fileName = 'log') {
         tempDir = path.join(tempDir, filePathArr[i]);
         if (!fs.existsSync(path.join(__dirname, '../', tempDir)))
             fs.mkdirSync(path.join(__dirname, '../', tempDir));
+    }
+
+    // 检查错误日志路径，不存在则创建
+    let errFilePathArr = g_config.error_log_file.split(/[\/(\\)]/);
+    let errTempDir = '';
+    for (let i = 0; i < errFilePathArr.length; i++) {
+        errTempDir = path.join(errTempDir, errFilePathArr[i]);
+        if (!fs.existsSync(path.join(__dirname, '../', errTempDir)))
+            fs.mkdirSync(path.join(__dirname, '../', errTempDir));
     }
 
     return function (req, res, next) {
@@ -53,17 +62,9 @@ function main(filePath = null, fileName = 'log') {
         // fileReadStream.on('end', function() { });
         fileReadStream.on('error', function (err) {
             console.error(err);
-            let fileDir = g_config.error_log_file.split(/[\/(\\)]/);
-            // 创建不存在的路径
-            let tempDir = '';
-            for (let i = 0; i < fileDir.length - 1; i++) {
-                tempDir = path.join(tempDir, fileDir[i]);
-                if (!fs.existsSync(path.join(__dirname, '../', tempDir)))
-                    fs.mkdirSync(tempDir);
-            }
 
             // 把错误信息写入另一个错误日志
-            fs.writeFileSync(path.join(__dirname, '../', g_config.error_log_file), err, 'utf-8', { flags: 'a+' });
+            fs.writeFileSync(path.join(__dirname, '../', g_config.error_log_file, errFileName+'-'+logDate+'.txt'), err, 'utf-8', { flags: 'a+' });
         })
         next();
     }
