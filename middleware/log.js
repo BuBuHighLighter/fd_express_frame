@@ -2,6 +2,7 @@ const url = require('url');
 const colors = require('colors');
 const path = require('path');
 const fs = require('fs');
+const logConf = require('../config/log')
 /**
  * 功能：用于自己生成日志格式
  * 参数：1.filePath 文件存储的路径（从项目的根目录开始）
@@ -18,7 +19,7 @@ function main(filePath = null, fileName = 'log', errFileName = 'err') {
     }
 
     // 检查错误日志路径，不存在则创建
-    let errFilePathArr = g_config.error_log_file.split(/[\/(\\)]/);
+    let errFilePathArr = logConf.log.error_log_file.split(/[\/(\\)]/);
     let errTempDir = '';
     for (let i = 0; i < errFilePathArr.length; i++) {
         errTempDir = path.join(errTempDir, errFilePathArr[i]);
@@ -64,7 +65,7 @@ function main(filePath = null, fileName = 'log', errFileName = 'err') {
             console.error(err);
 
             // 把错误信息写入另一个错误日志
-            fs.writeFileSync(path.join(__dirname, '../', g_config.error_log_file, errFileName+'-'+logDate+'.txt'), err, 'utf-8', { flags: 'a+' });
+            fs.writeFileSync(path.join(__dirname, '../', logConf.log.error_log_file, errFileName+'-'+logDate+'.txt'), err, 'utf-8', { flags: 'a+' });
         })
         next();
     }
