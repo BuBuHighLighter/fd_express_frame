@@ -8,6 +8,7 @@ var privateRouter = require('./routes/private');
 // 自定义中间件
 const fd_log = require('./middleware/log');
 const fd_body = require('./middleware/body');
+const log_conf = require('./config/log');
 
 // 引入全局方法（也不知道全局是不是比局部好，暂时先这么做）
 global.g_utils = require('./utils/Utils');
