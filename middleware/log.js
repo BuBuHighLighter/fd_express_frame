@@ -65,7 +65,7 @@ function main(filePath = null, fileName = 'log', errFileName = 'err') {
             console.error(err);
 
             // 把错误信息写入另一个错误日志
-            fs.writeFileSync(path.join(__dirname, '../', logConf.log.error_log_file, errFileName+'-'+logDate+'.txt'), err, 'utf-8', { flags: 'a+' });
+            fs.writeFileSync(path.join(__dirname, '../', logConf.log.error_log_file, errFileName + '-' + logDate + '.txt'), err, 'utf-8', { flags: 'a+' });
         })
         next();
     }

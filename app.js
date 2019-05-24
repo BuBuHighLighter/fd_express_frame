@@ -50,3 +50,8 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
+
+
+/**
+ * 1.把日志写入再封装一下
+ */
