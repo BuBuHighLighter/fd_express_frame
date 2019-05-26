@@ -58,5 +58,6 @@ module.exports = app;
 
 
 /**
- * 1.把日志写入再封装一下
+ * 1.把日志写入再封装一下,最好封装到req中（但是需要解决的就是其他没有req的地方该怎么写入日志）
+ * 2.mysql的封装把pool改成单独的对象，用this或者return function
  */
