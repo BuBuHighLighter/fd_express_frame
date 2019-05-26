@@ -8,6 +8,14 @@ let exportOBJ = {
         password: envConf.mysql.password || '',
         database: envConf.mysql.database || 'test',
         connectionLimit: envConf.mysql.connectionLimit || 10
+    },
+    redis: {
+        switch: envConf.redis.switch || false,
+        host: envConf.redis.host || '127.0.0.1',
+        password: envConf.redis.password || '',
+        port: envConf.redis.port || '6379',
+        return_buffers: envConf.redis.return_buffers || false,
+        db: envConf.redis.db || 0,
     }
 }
 
