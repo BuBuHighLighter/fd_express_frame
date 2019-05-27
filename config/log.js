@@ -1,9 +1,30 @@
 const envConf = require('../env_config.json')
 
 let defaultConf = {
+    dir_name: "log",
+    request: {
+        dir_name: "request",
+        file_name: "req_log",
+        rotate_switch: true,
+        rotate: "day"
+    },
+    response: {
+        dir_name: "response",
+        file_name: "res_log",
+        rotate_switch: true,
+        rotate: "day"
+    },
+    error: {
+        dir_name: "error",
+        file_name: "err",
+        rotate_switch: true,
+        rotate: "day"
+    },
     log: {
-        error_log_file: "/log/err",
-        log_path: "/log/api"
+        dir_name: "log",
+        file_name: "log",
+        rotate_switch: false,
+        rotate: "month"
     }
 }
 

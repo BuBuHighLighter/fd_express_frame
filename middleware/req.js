@@ -1,8 +1,8 @@
 /**
  * 功能：封装req自定义属性和方法
  */
-const uuid = require('uuid');
 const uuidv4 = require('uuid/v4');
+const url = require('url');
 
 function main() {
     return function (req, res, next) {
@@ -18,6 +18,10 @@ function main() {
             ip = ip.replace(/^:*f*:/, '');
 
         req.fd.ip = ip;                                     // 请求IP
+
+        req.fd.time = g_utils.FormatDate('yyyy-MM-dd hh:mm:ss');
+        req.fd.method = req.method.toLowerCase();
+        req.fd.pathName = url.parse(req.url).pathname;
 
         // 响应成功
         req.fd.success = function(data) {

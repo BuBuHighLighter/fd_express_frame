@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: false }));                               
 app.use(fd_req());                                                                  // 给req封装自定义属性和方法（fd_uid,以及日志的写入）
 app.use(fd_res());                                                                  // 给res封装自定义方法
 app.use(fd_body());                                                                 // 把请求参数全部放在req.body中
-app.use(fd_log(log_conf.log.log_path));                                             // 定义日志
+app.use(fd_log());                                             // 定义日志
 app.use(express.static(path.join(__dirname, 'public')));                            // 静态路径
 
 app.use('/public', publicRouter);                                                   // 公共接口，无需token
@@ -60,4 +60,5 @@ module.exports = app;
 /**
  * 1.把日志写入再封装一下,最好封装到req中（但是需要解决的就是其他没有req的地方该怎么写入日志）
  * 2.mysql的封装把pool改成单独的对象，用this或者return function
+ * 3.改一改log中间件的写法，把创建日志文件结构和写入日志分开
  */
