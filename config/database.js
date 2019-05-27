@@ -1,22 +1,23 @@
 const envConf = require('../env_config.json');
 
-let exportOBJ = {
+let defaultConf = {
     mysql: {
-        switch: envConf.mysql.switch || false,
-        host: envConf.mysql.host || '127.0.0.1',
-        user: envConf.mysql.user || 'root',
-        password: envConf.mysql.password || '',
-        database: envConf.mysql.database || 'test',
-        connectionLimit: envConf.mysql.connectionLimit || 10
+        switch: false,
+        host: '127.0.0.1',
+        user: 'root',
+        password: '',
+        database: 'test',
+        connectionLimit: 1
     },
     redis: {
-        switch: envConf.redis.switch || false,
-        host: envConf.redis.host || '127.0.0.1',
-        password: envConf.redis.password || '',
-        port: envConf.redis.port || '6379',
-        return_buffers: envConf.redis.return_buffers || false,
-        db: envConf.redis.db || 0,
+        switch: false,
+        host: '127.0.0.1',
+        password: '',
+        port: '6379',
+        return_buffers: false,
+        db: 0,
     }
 }
+let exportOBJ = g_utils.copyOBJ(defaultConf, envConf.database);          // 把envConf与defaultConf合并，并把合并结果返回
 
 module.exports = exportOBJ;

@@ -22,4 +22,15 @@ function FormatDate(mat, date = null)
 	return new Date(date).Format(mat);
 }
 
+// 把对象A合并到对象B中，并把合并结果obj返回(如果出现同名属性，b的会把a的覆盖)
+function copyOBJ(a, b, obj={}) {
+	obj = Object.assign(obj, b, a);						// a放后面，因为如果有同名属性，后面的源对象会覆盖前面的源对象
+	for(let i in a) {
+		if(typeof a[i] === 'object')
+			obj[i] = copyOBJ(a[i], b[i], obj[i]);
+	}
+	return obj;
+}
+
 exports.FormatDate = FormatDate;
+exports.copyOBJ = copyOBJ;

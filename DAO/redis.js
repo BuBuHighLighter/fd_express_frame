@@ -1,5 +1,5 @@
 const redis = require('redis');
-const databaseConf = require('../config/database');
+const databaseConf = require('../config/database').redis;
 const util = require('util');
 
 /**
@@ -27,60 +27,65 @@ const retry_strategy = function (options) {
 }
 
 // 初始化redis连接参数
-databaseConf.redis.retry_strategy = retry_strategy;
-databaseConf.redis.auth_pass = databaseConf.redis.password;
+databaseConf.retry_strategy = retry_strategy;
+databaseConf.auth_pass = databaseConf.password;
 
-const client = redis.createClient(databaseConf.redis);
-
-// 暴露对象
 let exportsOBJ = {};
-exportsOBJ.client = client;
 
-/**
- * 查询的异步方法
- */
-exportsOBJ.Query = function (com, args, cb) {
-    if (this.client[com] == null || this.client[com] == undefined) {
-        console.log('redis方法出错');
-        return cb(null);
-    }
-    this.client[com](args, function (err, res) {
-        if (err) {
-            console.log(err);
+if (databaseConf.switch == true) {
+    // 只有开关打开时才创建连接对象
+    const client = redis.createClient(databaseConf);
+
+    // 暴露对象
+    exportsOBJ.client = client;
+
+    /**
+     * 查询的异步方法
+     */
+    exportsOBJ.Query = function (com, args, cb) {
+        if (this.client[com] == null || this.client[com] == undefined) {
+            console.log('redis方法出错');
             return cb(null);
         }
-        return cb(res);
-    })
-}
+        this.client[com](args, function (err, res) {
+            if (err) {
+                console.log(err);
+                return cb(null);
+            }
+            return cb(res);
+        })
+    }
 
-// 查询的同步方法
-let QuerySyncFunc = (com, args, that = null) => {
-    return new Promise((resolve, reject) => {
-        if (that === null) {
-            return resolve(null);
-        }
-        let querySync;
+    // 查询的同步方法
+    let QuerySyncFunc = (com, args, that = null) => {
+        return new Promise((resolve, reject) => {
+            if (that === null) {
+                return resolve(null);
+            }
+            let querySync;
+            try {
+                querySync = util.promisify(that.client[com]).bind(that.client);
+            }
+            catch (e) {
+                console.log(e);
+                return resolve(null);
+            }
+            return resolve(querySync(args));
+        })
+    }
+
+    // 对象的同步查询封装
+    exportsOBJ.QuerySync = async function (com, args) {
         try {
-            querySync = util.promisify(that.client[com]).bind(that.client);
+            let result = await QuerySyncFunc(com, args, this);
+            return Promise.resolve(result);
         }
         catch (e) {
             console.log(e);
-            return resolve(null);
+            return Promise.resolve(null);
         }
-        return resolve(querySync(args));
-    })
+    }
 }
 
-// 对象的同步查询封装
-exportsOBJ.QuerySync = async function (com, args) {
-    try {
-        let result = await QuerySyncFunc(com, args, this);
-        return Promise.resolve(result);
-    }
-    catch (e) {
-        console.log(e);
-        return Promise.resolve(null);
-    }
-}
 
 module.exports = exportsOBJ;

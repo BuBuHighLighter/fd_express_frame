@@ -3,6 +3,14 @@ const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
 
+// 引入全局方法（也不知道全局是不是比局部好，暂时先这么做）
+global.g_utils = require('./utils/Utils');
+global.g_mysql = require('./DAO/mysql');
+global.g_redis = require('./DAO/redis');
+
+// 自定义设置
+const log_conf = require('./config/log');
+
 // 路由文件
 const publicRouter = require('./routes/public');
 const privateRouter = require('./routes/private');
@@ -12,14 +20,6 @@ const fd_log = require('./middleware/log');
 const fd_body = require('./middleware/body');
 const fd_res = require('./middleware/res');
 const fd_req = require('./middleware/req');
-
-// 自定义设置
-const log_conf = require('./config/log');
-
-// 引入全局方法（也不知道全局是不是比局部好，暂时先这么做）
-global.g_utils = require('./utils/Utils');
-global.g_mysql = require('./DAO/mysql');
-global.g_redis = require('./DAO/redis');
 
 const app = express();
 // view engine setup

@@ -1,10 +1,12 @@
-const logConf = require('../env_config.json')
+const envConf = require('../env_config.json')
 
-let exportOBJ = {
+let defaultConf = {
     log: {
-        error_log_file: logConf.log.error_log_file || "/log/err",
-        log_path: logConf.log.log_path || "/log/api"
+        error_log_file: "/log/err",
+        log_path: "/log/api"
     }
 }
+
+let exportOBJ = g_utils.copyOBJ(defaultConf, envConf.log);          // 把envConf与defaultConf合并，并把合并结果返回
 
 module.exports = exportOBJ;
