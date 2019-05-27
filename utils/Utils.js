@@ -1,3 +1,4 @@
+const uuidv4 = require('uuid/v4');
 Date.prototype.Format = function (fmt) 
 {
 	var o = {
@@ -32,5 +33,15 @@ function copyOBJ(a, b, obj={}) {
 	return obj;
 }
 
+function createFail(data = null) {
+	return {code: -1, data: data, uuid: uuidv4()};
+}
+
+function createSuccess(data=null) {
+	return {code: 0, data: data};
+}
+
 exports.FormatDate = FormatDate;
 exports.copyOBJ = copyOBJ;
+exports.createFail = createFail;
+exports.createSuccess = createSuccess;

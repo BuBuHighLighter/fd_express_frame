@@ -3,10 +3,11 @@
  */
 function main() {
     return function (req, res, next) {
-        res.fd_send = function(args) {
-            console.log(args);
-            res.end(args);
-        }
+        res.fd = {};
+        res.fd.success = req.fd.success;
+        res.fd.fail = req.fd.success;
+        res.fd.response = req.fd.response;
+        
         next();
     }
 }

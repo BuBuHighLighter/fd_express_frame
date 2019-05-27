@@ -8,7 +8,6 @@ function main() {
             req.body = JSON.parse(JSON.stringify(req.query));
         }
         
-        console.log(req.body);
         next();
     }
 }
