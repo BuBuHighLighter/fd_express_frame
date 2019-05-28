@@ -1,6 +1,7 @@
 const redis = require('redis');
 const databaseConf = require('../config/database').redis;
 const util = require('util');
+const uuidv4 = require('uuid/v4');
 
 /**
  * 功能：创建一个全局redis连接
@@ -44,33 +45,62 @@ if (databaseConf.switch == true) {
      */
     exportsOBJ.Query = function (com, args, cb) {
         if (this.client[com] == null || this.client[com] == undefined) {
-            console.log('redis方法出错');
-            return cb(null);
+            let uuid = uuidv4();
+            function getException() {
+                try {
+                    throw Error('无效的redis方法');
+                } catch (err) {
+                    return err;
+                }
+            }
+            const err = getException();
+            const stack = err.stack;
+            console.log(stack);
+            g_logger.error.log(stack, uuid);
+            return cb({ code: -1, msg: uuid });
         }
         this.client[com](args, function (err, res) {
             if (err) {
                 console.log(err);
-                return cb(null);
+                let uuid = uuidv4();
+                g_logger.error.log(err, uuid);
+                return cb({ code: -1, msg: uuid });
             }
-            return cb(res);
+            return cb({ code: 0, msg: res });
         })
     }
 
     // 查询的同步方法
     let QuerySyncFunc = (com, args, that = null) => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (that === null) {
-                return resolve(null);
+                let uuid = uuidv4();
+                function getException() {
+                    try {
+                        throw Error('无效的redis指针')
+                    } catch (err) {
+                        return err;
+                    }
+                }
+                const err = getException();
+                const stack = err.stack;
+                console.log(stack);
+                g_logger.error.log(stack, uuid);
+                return resolve({ code: -1, msg: uuid });
             }
             let querySync;
             try {
                 querySync = util.promisify(that.client[com]).bind(that.client);
             }
             catch (e) {
-                console.log(e);
-                return resolve(null);
+                console.log(e.stack);
+                let uuid = uuidv4();
+                g_logger.error.log(e.stack, uuid);
+                return resolve({ code: -1, msg: uuid });
             }
-            return resolve(querySync(args));
+            let result = await querySync(args);
+
+            return resolve({ code: 0, msg: result });
         })
     }
 
@@ -82,7 +112,9 @@ if (databaseConf.switch == true) {
         }
         catch (e) {
             console.log(e);
-            return Promise.resolve(null);
+            let uuid = uuidv4();
+            g_logger.error.log(e.stack, uuid);
+            return Promise.resolve({ code: -1, msg: uuid });
         }
     }
 }

@@ -20,7 +20,9 @@ function main() {
         g_logger[keys[i]] = createLogWriter(path.join(process.cwd(), logConf.dir_name, item.dir_name), item);
         createFile(path.join(absDir, logConf.dir_name, item.dir_name));
     }
+
     return function (req, res, next) {
+
         // 获取客户端的IP地址
         let ip = req.fd.ip;
 
@@ -41,11 +43,11 @@ function main() {
 
         req.fd.logger = g_logger;
 
-        for(let i in req.fd.logger) {
+        for (let i in req.fd.logger) {
             req.fd.logger[i].uuid = req.fd.uuid;
         }
 
-        console.log(colors.green(`[${date}]`),colors.blue(`(${uuid})`), colors.yellow(ip), colors.magenta(method), pathName, body);
+        console.log(colors.green(`[${date}]`), colors.blue(`(${uuid})`), colors.yellow(ip), colors.magenta(method), pathName, body);
 
         let logContent = ` ${ip} ${method} ${pathName} ${body}`;
 
@@ -62,12 +64,12 @@ function createFile(dir) {
 
 function createLogWriter(absDir, obj) {
     let retOBJ = {};
-    // 写入对应日志的操作（异步）
-    retOBJ.log = function(msg='', cb=null) {
+    // 写入对应日志的操作（异步）。这里传一个uuid用于某些取不到req的地方可以自己传uuid进来
+    retOBJ.log = function (msg = '', uuid = null, cb = null) {
         let fileName = obj.file_name;
         let fileNameExt = '';
-        if(obj.rotate_switch == true) {
-            switch(obj.rotate) {
+        if (obj.rotate_switch == true) {
+            switch (obj.rotate) {
                 case 'minute': fileNameExt = g_utils.FormatDate('_yyyy_MM_dd_hh_mm'); break;
                 case 'hour': fileNameExt = g_utils.FormatDate('_yyyy_MM_dd_hh'); break;
                 case 'day': fileNameExt = g_utils.FormatDate('_yyyy_MM_dd'); break;
@@ -78,10 +80,14 @@ function createLogWriter(absDir, obj) {
         }
         fileName = fileName + fileNameExt + '.txt';
 
-        if(typeof msg === 'object')
+        if (typeof msg === 'object')
             msg = JSON.stringify(msg);
+        let msgHead = '';
+        if(uuid === null) 
+            msgHead = `[${g_utils.FormatDate('yyyy-MM-dd hh:mm:ss:S')}] (${this.uuid}) `;
+        else 
+            msgHead = `[${g_utils.FormatDate('yyyy-MM-dd hh:mm:ss:S')}] (${uuid}) `;
 
-        let msgHead = `[${g_utils.FormatDate('yyyy-MM-dd hh:mm:ss:S')}] (${this.uuid}) `;
         msg = msgHead + msg + ' \r\n';
         let writeFilePath = path.join(absDir, fileName);
         let fileWriteStream = fs.createWriteStream(writeFilePath, { flags: 'a+' });
