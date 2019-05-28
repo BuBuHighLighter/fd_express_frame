@@ -19,12 +19,6 @@ let defaultConf = {
         file_name: "err",
         rotate_switch: true,
         rotate: "day"
-    },
-    log: {
-        dir_name: "log",
-        file_name: "log",
-        rotate_switch: false,
-        rotate: "month"
     }
 }
 

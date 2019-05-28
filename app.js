@@ -8,9 +8,6 @@ global.g_utils = require('./utils/Utils');
 global.g_mysql = require('./DAO/mysql');
 global.g_redis = require('./DAO/redis');
 
-// 自定义设置
-const log_conf = require('./config/log');
-
 // 路由文件
 const publicRouter = require('./routes/public');
 const privateRouter = require('./routes/private');
@@ -29,10 +26,10 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public', 'icon', 'favicon.ico')));            // 获取网站图标
 app.use(express.json());                                                            // 解析请求参数
 app.use(express.urlencoded({ extended: false }));                                   // 解析请求参数（不是很清楚）
-app.use(fd_req());                                                                  // 给req封装自定义属性和方法（fd_uid,以及日志的写入）
-app.use(fd_res());                                                                  // 给res封装自定义方法
 app.use(fd_body());                                                                 // 把请求参数全部放在req.body中
-app.use(fd_log());                                             // 定义日志
+app.use(fd_req());                                                                  // 给req封装自定义属性和方法（fd_uid,以及日志的写入）
+app.use(fd_log());                                                                  // 定义日志
+app.use(fd_res());                                                                  // 给res封装自定义方法(这个必须放在fd_log和fd_req后面，因为需要用到这两个定义的东西)
 app.use(express.static(path.join(__dirname, 'public')));                            // 静态路径
 
 app.use('/public', publicRouter);                                                   // 公共接口，无需token
@@ -51,6 +48,11 @@ app.use(function (err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
+
+    res.fd.logger.error.log(err.stack);                         // 把错误写入日志
+    console.log(err.stack);
+
+
     res.render('error');
 });
 
