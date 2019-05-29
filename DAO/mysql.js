@@ -34,30 +34,23 @@ if (databaseConf.switch === true) {
     // 查询的同步写法    
     function QuerySyncFunc(sql, args, that) {
         return new Promise((resolve, reject) => {
-            if(that == null) {
-                let uuid = uuidv4();
-                function getException() {
-                    try {
-                        throw Error('无效的MySQL指针');
-                    } catch (err) {
-                        return err;
+            try{
+                that.pool.query(sql, args, function (err, results, fields) {
+                    if (err)
+                        return reject(err);
+                    let result = {
+                        results: results,
+                        fields: fields
                     }
-                }
-                const err = getException();
-                const stack = err.stack;
-                console.log(stack);
-                g_logger.error.log(stack, uuid);
+                    return resolve({code: 0, msg: result});
+                })
+            }
+            catch(e) {
+                console.log(e);
+                let uuid = uuidv4();
+                g_logger.error.log(e.stack, uuid);
                 return resolve({code: -1, msg: uuid});
             }
-            that.pool.query(sql, args, function (err, results, fields) {
-                if (err)
-                    return reject(err);
-                let result = {
-                    results: results,
-                    fields: fields
-                }
-                return resolve({code: 0, msg: result});
-            })
 
         })
     }
@@ -70,10 +63,9 @@ if (databaseConf.switch === true) {
         }
         catch (e) {
             let uuid = uuidv4();
-            console.log(e.stack);
+            console.log(e);
             g_logger.error.log(e.stack, uuid);
             return Promise.resolve({code: -1, msg: uuid});
-            // 这里需要写入err日志
         }
     };
 

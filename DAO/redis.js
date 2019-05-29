@@ -44,56 +44,34 @@ if (databaseConf.switch == true) {
      * 查询的异步方法
      */
     exportsOBJ.Query = function (com, args, cb) {
-        if (this.client[com] == null || this.client[com] == undefined) {
-            let uuid = uuidv4();
-            function getException() {
-                try {
-                    throw Error('无效的redis方法');
-                } catch (err) {
-                    return err;
+        try{
+            this.client[com](args, function (err, res) {
+                if (err) {
+                    console.log(err);
+                    let uuid = uuidv4();
+                    g_logger.error.log(err, uuid);
+                    return cb({ code: -1, msg: uuid });
                 }
-            }
-            const err = getException();
-            const stack = err.stack;
-            console.log(stack);
-            g_logger.error.log(stack, uuid);
+                return cb({ code: 0, msg: res });
+            })
+        }
+        catch(e) {
+            console.log(e);
+            let uuid = uuidv4();
+            g_logger.error.log(e.stack, uuid);
             return cb({ code: -1, msg: uuid });
         }
-        this.client[com](args, function (err, res) {
-            if (err) {
-                console.log(err);
-                let uuid = uuidv4();
-                g_logger.error.log(err, uuid);
-                return cb({ code: -1, msg: uuid });
-            }
-            return cb({ code: 0, msg: res });
-        })
     }
 
     // 查询的同步方法
     let QuerySyncFunc = (com, args, that = null) => {
         return new Promise(async (resolve, reject) => {
-            if (that === null) {
-                let uuid = uuidv4();
-                function getException() {
-                    try {
-                        throw Error('无效的redis指针')
-                    } catch (err) {
-                        return err;
-                    }
-                }
-                const err = getException();
-                const stack = err.stack;
-                console.log(stack);
-                g_logger.error.log(stack, uuid);
-                return resolve({ code: -1, msg: uuid });
-            }
             let querySync;
             try {
                 querySync = util.promisify(that.client[com]).bind(that.client);
             }
             catch (e) {
-                console.log(e.stack);
+                console.log(e);
                 let uuid = uuidv4();
                 g_logger.error.log(e.stack, uuid);
                 return resolve({ code: -1, msg: uuid });

@@ -49,9 +49,8 @@ app.use(function (err, req, res, next) {
     // render the error page
     res.status(err.status || 500);
 
+    console.log(err);
     res.fd.logger.error.log(err.stack);                         // 把错误写入日志
-    console.log(err.stack);
-
 
     res.render('error');
 });
