@@ -1,4 +1,11 @@
-const envConf = require('../env_config.json')
+let envConf = {};
+
+try{
+    envConf = require('../env_config.json').log;
+}
+catch(e) {
+    envConf = {};
+}
 
 let defaultConf = {
     dir_name: "log",

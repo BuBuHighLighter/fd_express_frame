@@ -5,8 +5,8 @@ const favicon = require('serve-favicon');
 
 // 引入全局方法（也不知道全局是不是比局部好，暂时先这么做）
 global.g_utils = require('./utils/Utils');
-global.g_mysql = require('./DAO/mysql');
-global.g_redis = require('./DAO/redis');
+global.g_mysql = require('./DAO/mysql')('mysql');                                   // 第二参数是env_config中定义的名称
+global.g_redis = require('./DAO/redis')('redis');
 
 // 路由文件
 const publicRouter = require('./routes/public');
@@ -17,6 +17,7 @@ const fd_log = require('./middleware/log');
 const fd_body = require('./middleware/body');
 const fd_res = require('./middleware/res');
 const fd_req = require('./middleware/req');
+const fd_console = require('./middleware/console');
 
 const app = express();
 // view engine setup
@@ -26,6 +27,7 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public', 'icon', 'favicon.ico')));            // 获取网站图标
 app.use(express.json());                                                            // 解析请求参数
 app.use(express.urlencoded({ extended: false }));                                   // 解析请求参数（不是很清楚）
+app.use(fd_console());                                                              // 重写console.log
 app.use(fd_body());                                                                 // 把请求参数全部放在req.body中
 app.use(fd_req());                                                                  // 给req封装自定义属性和方法（fd_uid,以及日志的写入）
 app.use(fd_log());                                                                  // 定义日志
@@ -56,8 +58,3 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
-
-
-/**
- * 1.把redis、mysql的报错写入日志
- */

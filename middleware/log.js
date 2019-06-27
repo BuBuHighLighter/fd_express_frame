@@ -47,7 +47,7 @@ function main() {
             req.fd.logger[i].uuid = req.fd.uuid;
         }
 
-        console.log(colors.green(`[${date}]`), colors.blue(`(${uuid})`), colors.yellow(ip), colors.magenta(method), pathName, body);
+        console.log(colors.blue(`(${uuid})`), colors.yellow(ip), colors.magenta(method), pathName, body);
 
         let logContent = ` ${ip} ${method} ${pathName} ${body}`;
 

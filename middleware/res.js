@@ -55,7 +55,7 @@ function _print(uuid, data, startDate=null) {
     if(startDate !== null)
         useTime = parseInt(new Date(date).getTime()) - parseInt(new Date(startDate).getTime());
 
-    console.log(colors.green(`[${date}]`), colors.blue(`(${uuid})`), useTime+colors.green('ms'), data);
+    console.log(colors.blue(`(${uuid})`), useTime+colors.green('ms'), data);
 }
 
 module.exports = main;

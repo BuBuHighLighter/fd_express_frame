@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('my-frame-1:server');
 var http = require('http');
+const colors = require('colors');
 
 /**
  * Get port from environment and store in Express.
@@ -87,4 +88,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  let time = g_utils.FormatDate('yyyy-MM-dd hh:mm:ss:S');
+  console.log(colors.green(`[${time}]`), `服务器已经在`,colors.blue(`${typeof addr === 'string' ? addr: addr.port}`),`端口启动`);
 }

@@ -1,4 +1,11 @@
-const envConf = require('../env_config.json');
+let envConf = {};
+
+try{
+    envConf = require('../env_config.json').database;
+}
+catch(e) {
+    envConf = {};
+}
 
 let defaultConf = {
     mysql: {

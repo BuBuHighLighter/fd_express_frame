@@ -1,7 +1,11 @@
-const request = require('request');
 let main = {
     post: function(req, res, next) {
+        res.fd.success('ok');
+    },
 
+    get: function(req, res, next) {
+        console.log('get ok');
+        res.fd.success('ok');
     }
 }
 
